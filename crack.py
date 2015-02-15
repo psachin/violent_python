@@ -21,8 +21,7 @@ def test_password(crypt_pass):
     dict_file = open('dictionary.txt', 'r')
     for word in dict_file.readlines():
         word = word.strip('\n')
-        crypt_word = crypt.crypt(word, salt)
-        if crypt_word == crypt_pass:
+        if crypt.crypt(word, salt) == crypt_pass:
             print "[+] Found password: " + word + "\n"
             return
 
