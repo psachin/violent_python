@@ -23,10 +23,10 @@ def test_password(crypt_pass):
         word = word.strip('\n')
         if crypt.crypt(word, salt) == crypt_pass:
             print "[+] Found password: " + word + "\n"
-            return
+            return 0
 
     print "[-] Password not found!\n"
-    return
+    return 1
 
 
 def main():
