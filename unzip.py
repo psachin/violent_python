@@ -5,11 +5,15 @@ Note: Replace dictionary.txt with
 http://dazzlepod.com/site_media/txt/uniqpass_preview.txt to test
 actual multi-threading. Append the content of dictionary.txt in
 uniqpass_preview.txt
+
+Usage:
+python unzip.py -f dirs.zip -d dictionary.txt
 """
 __author__ = "Sachin"
 __email__ = "iclcoolster@gmail.com"
 __description__ = "A Zip File password cracker."
 
+import argparse
 import zipfile
 from threading import Thread
 
@@ -50,6 +54,19 @@ def main(zip_file, dictionary):
         thread.join()
 
 if __name__ == '__main__':
-    zip_file = 'dirs.zip'
-    dictionary_file = 'dictionary.txt'
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--zipfile", help="Protectted zip file name.")
+    parser.add_argument("-d", "--dictionary", help="Dictionary file name.")
+    args = parser.parse_args()
+
+    if args.zipfile:
+        zip_file = args.zipfile
+    else:
+        zip_file = 'dirs.zip'
+
+    if args.dictionary:
+        dictionary_file = args.dictionary
+    else:
+        dictionary_file = 'dictionary.txt'
+
     main(zip_file, dictionary_file)
