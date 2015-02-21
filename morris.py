@@ -2,7 +2,7 @@
 """A (something like)Morris scanner.
 
 Usage:
-python morris.py --host localhost --port 21,22,80,37
+python morris.py --host localhost --ports 21 22 80 37
 """
 __author__ = "Sachin"
 __email__ = "iclcoolster@gmail.com"
@@ -40,8 +40,10 @@ def port_scan(host, port):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--host", dest='host', help="Host IP address")
-    parser.add_argument("--ports", dest='ports', help="Port(s)")
+    parser.add_argument("-H", "--host", dest='host',
+                        help="Host IP address")
+    parser.add_argument("-p", "--ports", nargs="+", dest='ports',
+                        type=int, help="Port(s)")
     args = parser.parse_args()
 
     if args.host is None or args.ports is None:
@@ -49,5 +51,5 @@ if __name__ == '__main__':
         exit(0)
     else:
         print "Scan results for %s" % args.host
-        for port in args.ports.split(','):
-            port_scan(args.host, int(port))
+        for port in args.ports:
+            port_scan(args.host, port)
