@@ -3,6 +3,8 @@
 
 Usage:
 python morris.py --host localhost --ports 21 22 80 37
+or
+python morris.py -H localhost -p 21 22 80 37
 """
 __author__ = "Sachin"
 __email__ = "iclcoolster@gmail.com"
@@ -32,11 +34,8 @@ def port_scan(host, port):
         target = socket.gethostbyaddr(host)
 
     socket.setdefaulttimeout(1)
-    reply = connect_target(target, port)
-    if reply:
-        print '[+] Port %d: %s' % (port, reply)
-    else:
-        print '[-] No reply from port %d' % port
+    return connect_target(target, port)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -52,4 +51,8 @@ if __name__ == '__main__':
     else:
         print "Scan results for %s" % args.host
         for port in args.ports:
-            port_scan(args.host, port)
+            reply = port_scan(args.host, port)
+            if reply:
+                print '[+] Port %d: %s' % (port, reply)
+            else:
+                print '[-] No reply from port %d' % port
