@@ -12,32 +12,42 @@ __description__ = "A (something like)Morris scanner."
 
 import argparse
 import socket
+import threading
 
 
 def connect_target(host, port, buffer_size=200):
-    """Try to connect the target host"""
+    """Try to connect the target host:port"""
+    threadlock = threading.Lock()
     try:
         conn_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         conn_socket.connect((host, port))
         reply = conn_socket.recv(buffer_size)
+        threadlock.acquire()
+        print '[+] Port %d: %s' % (port, reply.strip())
+    except Exception, err:
+        threadlock.acquire()
+        print '[-] Port %d %s' % (port, err)
+    finally:
+        threadlock.release()
         conn_socket.close()
-        return reply.strip()
-    except Exception, error:
-        return False
 
 
-def port_scan(host, port):
+def port_scan(host, ports, timeout=1):
     """Try to scan ports of host specified"""
     try:
         target = socket.gethostbyname(host)
     except:
         target = socket.gethostbyaddr(host)
+    socket.setdefaulttimeout(timeout)
 
-    socket.setdefaulttimeout(1)
-    return connect_target(target, port)
+    threads = []
+    for port in ports:
+        thread = threading.Thread(target=connect_target, args=(target, port))
+        thread.start()
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-H", "--host", dest='host',
                         help="Host IP address")
@@ -50,9 +60,4 @@ if __name__ == '__main__':
         exit(0)
     else:
         print "Scan results for %s" % args.host
-        for port in args.ports:
-            reply = port_scan(args.host, port)
-            if reply:
-                print '[+] Port %d: %s' % (port, reply)
-            else:
-                print '[-] No reply from port %d' % port
+        port_scan(args.host, args.ports)
