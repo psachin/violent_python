@@ -14,6 +14,8 @@ __email__ = "iclcoolster@gmail.com"
 __description__ = "A Zip File password cracker."
 
 import argparse
+import random
+import time
 import zipfile
 from threading import Thread
 
@@ -28,6 +30,7 @@ def extract_file(zfile, password):
     try:
         zfile.extractall(pwd=password)
         print "[+] Password = " + password + '\n'
+        return
     except Exception, error:
         pass
 
@@ -44,8 +47,9 @@ def main(zip_file, dictionary):
     threads = []
     zfile = zipfile.ZipFile(zip_file)
     dict_file = open(dictionary, 'r')
-    for word in dict_file.readlines():
-        word = word.strip('\n')
+    word_list = [word.strip('\n') for word in dict_file.readlines()]
+    random.shuffle(word_list)
+    for word in word_list:
         thread = Thread(target=extract_file, args=(zfile, word))
         thread.start()
         threads.append(thread)
@@ -68,5 +72,7 @@ if __name__ == '__main__':
         dictionary_file = args.dictionary
     else:
         dictionary_file = 'dictionary.txt'
-
+    start_time = time.time()
     main(zip_file, dictionary_file)
+    end_time = time.time()
+    print "Took {0} seconds.".format(end_time - start_time)
